@@ -155,7 +155,7 @@ install:
     pend if RUBY_PLATFORM.include?("mswin") && ENV.key?("GITHUB_ACTIONS") # not working from the beginning
 
     @orig_install_extension_in_lib = Gem.configuration.install_extension_in_lib
-    Gem.configuration.install_extension_in_lib = true
+    Gem.configuration.install_extension_in_lib = false
 
     @spec.extensions << "ext/extconf.rb"
 
