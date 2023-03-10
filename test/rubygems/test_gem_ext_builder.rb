@@ -152,16 +152,10 @@ install:
   end
 
   def test_build_extensions_install_ext_only
-    class << Gem
-      alias orig_install_extension_in_lib install_extension_in_lib
-
-      remove_method :install_extension_in_lib
-
-      def Gem.install_extension_in_lib
-        false
-      end
-    end
     pend if RUBY_PLATFORM.include?("mswin") && ENV.key?("GITHUB_ACTIONS") # not working from the beginning
+
+    @orig_install_extension_in_lib = Gem.configuration.install_extension_in_lib
+    Gem.configuration.install_extension_in_lib = true
 
     @spec.extensions << "ext/extconf.rb"
 
@@ -196,11 +190,7 @@ install:
     assert_path_not_exist File.join @spec.gem_dir, "lib", "a.rb"
     assert_path_not_exist File.join @spec.gem_dir, "lib", "a", "b.rb"
   ensure
-    class << Gem
-      remove_method :install_extension_in_lib
-
-      alias install_extension_in_lib orig_install_extension_in_lib
-    end
+    Gem.configuration.install_extension_in_lib = @orig_install_extension_in_lib
   end
 
   def test_build_extensions_none
